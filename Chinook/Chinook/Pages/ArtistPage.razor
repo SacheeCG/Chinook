@@ -167,31 +167,33 @@ else
 
         var newPlaylist = PlaylistService.GetPlaylistByName(NewPlaylistName).Result;
 
-        if (newPlaylist == null)
-        {
-            newPlaylist = new Chinook.Models.Playlist { Name = NewPlaylistName };
-            await PlaylistService.AddAsync(newPlaylist);
-        }
+        try{
 
-        if (!newPlaylist.Tracks.Contains(addingTrack))
-        {
-            addingTrack.IsFavorite = true;
-            newPlaylist.UserPlaylists = new List<UserPlaylist> { new UserPlaylist { UserId = CurrentUserId } };
-            newPlaylist.Tracks.Add(addingTrack);
-            await PlaylistService.AddAsync(newPlaylist);
+            if (newPlaylist == null)
+            {
+                newPlaylist = new Chinook.Models.Playlist { Name = NewPlaylistName };
+                await PlaylistService.AddAsync(newPlaylist);
+            }
+
+            if (!newPlaylist.Tracks.Contains(addingTrack))
+            {
+                addingTrack.IsFavorite = true;
+                newPlaylist.UserPlaylists = new List<UserPlaylist> { new UserPlaylist { UserId = CurrentUserId } };
+                newPlaylist.Tracks.Add(addingTrack);
+                await PlaylistService.AddAsync(newPlaylist);
+            }
+            InfoMessage = $"Track {Artist.Name} - {SelectedTrack.AlbumTitle} - {SelectedTrack.TrackName} added to playlist {{playlist name}}.";
         }
-       
-        InfoMessage = $"Track {Artist.Name} - {SelectedTrack.AlbumTitle} - {SelectedTrack.TrackName} added to playlist {{playlist name}}.";
-        PlaylistDialog.Close();
-        
+        catch (Exception ex)
+        {
+            PlaylistDialog.Close();
+        }
     }
 
     private void CloseInfoMessage()
     {
         InfoMessage = "";
     }
-
-
 }
 
 <Modal @ref="PlaylistDialog">
