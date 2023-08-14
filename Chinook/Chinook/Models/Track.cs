@@ -20,6 +20,7 @@ namespace Chinook.Models
         public long Milliseconds { get; set; }
         public long? Bytes { get; set; }
         public byte[] UnitPrice { get; set; } = null!;
+        public bool IsFavorite { get; set; }
 
         public virtual Album? Album { get; set; }
         public virtual Genre? Genre { get; set; }
