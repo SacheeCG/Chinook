@@ -51,7 +51,7 @@ else
                                 {
                                     @if (track.IsFavorite)
                                     {
-                                        <a href="#" class="m-1" title="Unark as favorite" @onclick="@(() => ToggleFavorite(track))" @onclick:preventDefault><i class="bi @(track.IsFavorite ? "bi-star-fill" : "bi-star")"></i></a>
+                                        <a href="#" class="m-1" title="Unmark as favorite" @onclick="@(() => ToggleFavorite(track))" @onclick:preventDefault><i class="bi @(track.IsFavorite ? "bi-star-fill" : "bi-star")"></i></a>
                                     }
                                     else
                                     {
@@ -116,18 +116,18 @@ else
         }
     }
 
-    private void FavoriteTrack(Chinook.Models.Track track)
+    private async void FavoriteTrack(Chinook.Models.Track track)
     {
         var markedTrack = FavoritePlaylist.Tracks.FirstOrDefault(t => t.TrackId == track.TrackId);
         track.IsFavorite = true;
         var playlistName = "Favorites";
         var favoritePlaylist = PlaylistService.GetPlaylistByName(playlistName).Result;
-        var selectedTrack = ArtistService.GetAllTrackById(track.TrackId).Result;
+        var selectedTrack = ArtistService.GetTrackById(track.TrackId).Result;
 
         if (favoritePlaylist == null)
         {
             favoritePlaylist = new Chinook.Models.Playlist { Name = "Favorites" };
-            PlaylistService.AddAsync(favoritePlaylist);
+            await PlaylistService.AddAsync(favoritePlaylist);
         }
 
         if (!favoritePlaylist.Tracks.Contains(selectedTrack))
@@ -135,7 +135,7 @@ else
             selectedTrack.IsFavorite = true;
             favoritePlaylist.UserPlaylists = new List<UserPlaylist> { new UserPlaylist { UserId = CurrentUserId } };
             favoritePlaylist.Tracks.Add(selectedTrack);
-            PlaylistService.AddAsync(favoritePlaylist);
+            await PlaylistService.AddAsync(favoritePlaylist);
         }
         InfoMessage = $"Track {Album.Where(x => x.AlbumId == @track.AlbumId).Select(x => x.Artist.Name).FirstOrDefault()} - {Album.Where(x => x.AlbumId == @track.AlbumId).Select(x => x.Title).FirstOrDefault()} - {track.Name} added to playlist Favorites.";
     }

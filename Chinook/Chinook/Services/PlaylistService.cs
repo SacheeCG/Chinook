@@ -1,6 +1,7 @@
 ﻿using Chinook.ClientModels;
 using Chinook.Models;
 using Microsoft.EntityFrameworkCore;
+using Playlist = Chinook.Models.Playlist;
 
 namespace Chinook.Services
 {
@@ -24,12 +25,25 @@ namespace Chinook.Services
 
         public async Task<List<Chinook.Models.Playlist>> GetUserPlaylists(string currentUserId)
         {
-            return await _context.Playlists.Include(p => p.UserPlaylists.Where(x => x.UserId == currentUserId)).ToListAsync();
+            return await _context.Playlists.Include(p => p.UserPlaylists.Where(x => x.UserId == currentUserId)).Where(x=>x.UserPlaylists != null).ToListAsync();
         }
 
         public async Task<List<Album>> GetAlbums()
         {
             return await _context.Albums.Include(p => p.Artist).ToListAsync();
+        }
+
+        public async Task<Album> GetAlbumByName(string albumName)
+        {
+            return await _context.Albums.Include(p => p.Artist).Where(a => a.Title == albumName).FirstOrDefaultAsync();
+        }
+
+        public async Task CreatePlaylistAsync(string playlistName)
+        {
+            var playlist = new Playlist { Name = playlistName };
+            //_context.Playlists.Add(playlist);
+            _context.Entry(playlistName).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

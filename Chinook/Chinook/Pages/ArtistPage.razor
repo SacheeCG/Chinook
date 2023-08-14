@@ -71,6 +71,9 @@ else
     private PlaylistTrack SelectedTrack;
     private string InfoMessage;
     private string CurrentUserId;
+    public string SelectedPlayist;
+    string NewPlaylistName;
+    private List<Models.Playlist> UserPlaylists;
 
     protected override async Task OnInitializedAsync()
     {
@@ -78,9 +81,11 @@ else
 
         CurrentUserId = await UserService.GetUserId(AuthenticationState);
 
-        Artist = ArtistService.GetByIdAsync(ArtistId).Result;
+        Artist = await ArtistService.GetById(ArtistId);
 
-        Tracks = ArtistService.GetAllTracksByArtist(ArtistId, CurrentUserId).Result;
+        Tracks = await ArtistService.GetAllTracksByArtist(ArtistId, CurrentUserId);
+
+        UserPlaylists = await PlaylistService.GetUserPlaylists(CurrentUserId);
     }
 
     private void ToggleFavorite(PlaylistTrack track)
@@ -103,7 +108,7 @@ else
         track.IsFavorite = true;
         var playlistName = "Favorites";
         var favoritePlaylist = PlaylistService.GetPlaylistByName(playlistName).Result;
-        var selectedTrack = ArtistService.GetAllTrackById(track.TrackId).Result;
+        var selectedTrack = ArtistService.GetTrackById(track.TrackId).Result;
 
         if (favoritePlaylist == null)
         {
@@ -146,18 +151,39 @@ else
         await PlaylistService.UpdateAsync(favoritePlayList);
     }
 
-    private void OpenPlaylistDialog(PlaylistTrack track)
+    private async Task OpenPlaylistDialog(PlaylistTrack track)
     {
         CloseInfoMessage();
         SelectedTrack = Tracks.FirstOrDefault(t => t.TrackId == track.TrackId);
         PlaylistDialog.Open();
     }
 
-    private void AddTrackToPlaylist()
+    private async Task AddTrackToPlaylist()
     {
         CloseInfoMessage();
+
+        var addingTrack = new Track();
+        addingTrack = await ArtistService.GetTrackById(SelectedTrack.TrackId);
+
+        var newPlaylist = PlaylistService.GetPlaylistByName(NewPlaylistName).Result;
+
+        if (newPlaylist == null)
+        {
+            newPlaylist = new Chinook.Models.Playlist { Name = NewPlaylistName };
+            await PlaylistService.AddAsync(newPlaylist);
+        }
+
+        if (!newPlaylist.Tracks.Contains(addingTrack))
+        {
+            addingTrack.IsFavorite = true;
+            newPlaylist.UserPlaylists = new List<UserPlaylist> { new UserPlaylist { UserId = CurrentUserId } };
+            newPlaylist.Tracks.Add(addingTrack);
+            await PlaylistService.AddAsync(newPlaylist);
+        }
+       
         InfoMessage = $"Track {Artist.Name} - {SelectedTrack.AlbumTitle} - {SelectedTrack.TrackName} added to playlist {{playlist name}}.";
         PlaylistDialog.Close();
+        
     }
 
     private void CloseInfoMessage()
@@ -176,21 +202,26 @@ else
         @if (SelectedTrack != null)
         {
             <div class="form-group mb-2">
-                <label>@Artist.Name - @SelectedTrack.AlbumTitle - @SelectedTrack.TrackName</label>
+                <label>@SelectedTrack.ArtistName - @SelectedTrack.AlbumTitle - @SelectedTrack.TrackName</label>
             </div>
         }
 
         <div class="form-group mb-2">
             <label for="ExistingPlaylist">Add to existing playlist</label>
-            <select class="form-control" id="ExistingPlaylist">
-                <option>Playlist 1</option>
-                <option>Playlist 2</option>
-                <option>Playlist 3</option>
+            <select class="form-control" id="ExistingPlaylist" @bind="SelectedPlayist">
+                @foreach (var playlist in UserPlaylists.Where(x => x.UserPlaylists.Count > 0))
+                {
+                    <option value=""></option>
+                    <option value="@playlist.PlaylistId">@playlist.Name</option>
+                }
             </select>
         </div>
         <div class="form-group mb-2">
             <label for="NewPlaylist">Create new playlist</label>
-            <input type="text" id="NewPlaylist" class="form-control" placeholder="Name for the new playlist">
+            @if (SelectedPlayist == null)
+            {
+                <input type="text" id="NewPlaylist" class="form-control" placeholder="Name for the new playlist" @bind="NewPlaylistName">
+            }
         </div>
     </Body>
     <Footer>

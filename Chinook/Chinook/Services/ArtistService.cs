@@ -1,10 +1,11 @@
 ﻿using Chinook.ClientModels;
 using Chinook.Models;
 using Microsoft.EntityFrameworkCore;
+using Playlist = Chinook.Models.Playlist;
 
 namespace Chinook.Services
 {
-    public class ArtistService : BaseDataService<Artist>
+    public class ArtistService : BaseDataService<Playlist>
     {
         private readonly ChinookContext _context;
         public ArtistService(ChinookContext context) : base(context)
@@ -19,10 +20,14 @@ namespace Chinook.Services
                 { AlbumTitle = (t.Album == null ? "-" : t.Album.Title), TrackId = t.TrackId, TrackName = t.Name, IsFavorite = t.IsFavorite }).ToList();
         }
 
-        public async Task<Track> GetAllTrackById(long trackId)
+        public async Task<Track> GetTrackById(long trackId)
         {
-            return _context.Tracks.Where(a => a.TrackId == trackId).FirstOrDefault();
+            return await _context.Tracks.Where(a => a.TrackId == trackId).FirstOrDefaultAsync();
         }
 
+        public async Task<Artist> GetById(long artistId)
+        {
+            return await _context.Artists.Where(a => a.ArtistId == artistId).FirstOrDefaultAsync();
+        }
     }
 }
