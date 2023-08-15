@@ -29,6 +29,7 @@ public partial class ChinookContext : IdentityDbContext<ChinookUser>
     public virtual DbSet<Playlist> Playlists { get; set; } = null!;
     public virtual DbSet<Track> Tracks { get; set; } = null!;
     public virtual DbSet<UserPlaylist> UserPlaylists { get; set; } = null!;
+    public virtual DbSet<PlaylistTrack> PlaylistTracks { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -214,11 +215,24 @@ public partial class ChinookContext : IdentityDbContext<ChinookUser>
             entity.Property(e => e.Name).HasColumnType("NVARCHAR(120)");
         });
 
+        modelBuilder.Entity<PlaylistTrack>()
+            .HasKey(pt => new { pt.PlaylistId, pt.TrackId });
+
+        modelBuilder.Entity<PlaylistTrack>()
+            .HasOne(pt => pt.Playlist)
+            .WithMany(p => p.PlaylistTracks)
+            .HasForeignKey(pt => pt.PlaylistId);
+
+        modelBuilder.Entity<PlaylistTrack>()
+            .HasOne(pt => pt.Track)
+            .WithMany(t => t.PlaylistTracks)
+            .HasForeignKey(pt => pt.TrackId);
+
         modelBuilder.Entity<Playlist>(entity =>
         {
             entity.ToTable("Playlist");
 
-            entity.Property(e => e.PlaylistId).ValueGeneratedNever();
+            entity.Property(e => e.PlaylistId);
 
             entity.Property(e => e.Name).HasColumnType("NVARCHAR(120)");
 
@@ -248,7 +262,7 @@ public partial class ChinookContext : IdentityDbContext<ChinookUser>
 
             entity.HasIndex(e => e.MediaTypeId, "IFK_TrackMediaTypeId");
 
-            entity.Property(e => e.TrackId).ValueGeneratedNever();
+            entity.Property(e => e.TrackId);
 
             entity.Property(e => e.Composer).HasColumnType("NVARCHAR(220)");
 

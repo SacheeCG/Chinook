@@ -27,6 +27,9 @@ builder.Services.AddScoped<HomeService>();
 builder.Services.AddScoped<ArtistService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PlaylistService>();
+builder.Services.AddScoped<NavMenuService>();
+
+
 
 var app = builder.Build();
 

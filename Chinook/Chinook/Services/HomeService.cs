@@ -12,14 +12,14 @@ namespace Chinook.Services
         }
         public async Task<List<Artist>> GetArtists()
         {
-            var users = await _context.Users.Include(a => a.UserPlaylists).ToListAsync();
+            var users = await _context.Users.AsNoTracking().Include(a => a.UserPlaylists).ToListAsync();
 
             return _context.Artists.ToList();
         }
 
         public async Task<List<Album>> GetAlbumsForArtist(int artistId)
         {
-            return _context.Albums.Where(a => a.ArtistId == artistId).ToList();
+            return _context.Albums.AsNoTracking().Where(a => a.ArtistId == artistId).ToList();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Chinook.Services
         public async Task AddAsync(T entity)
         {
             _context.Set<T>().Add(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Entry(entity).State = EntityState.Added;
             await _context.SaveChangesAsync();
         }
 

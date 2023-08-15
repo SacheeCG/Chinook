@@ -8,6 +8,7 @@
 
 <PageTitle>Index</PageTitle>
 
+   
 <h1>Artists</h1>
 
 @if (Artists == null)
@@ -40,6 +41,7 @@ else
 @code {
     private List<Artist> Artists;
     private List<Artist> FilteredArtists;
+   
 
     private string SearchTerm;
 
@@ -60,4 +62,5 @@ else
             FilteredArtists = Artists;
         }
     }
+    
 }
