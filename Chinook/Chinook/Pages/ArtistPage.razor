@@ -119,10 +119,10 @@ else
             if (favoritePlaylist == null)
             {
                 favoritePlaylist = new Chinook.Models.Playlist
-                    {
-                        Name = "My favorite tracks",
-                        UserPlaylists = new List<UserPlaylist> { new UserPlaylist { UserId = CurrentUserId } },
-                        Tracks = new List<Track> {
+                {
+                    Name = "My favorite tracks",
+                    UserPlaylists = new List<UserPlaylist> { new UserPlaylist { UserId = CurrentUserId } },
+                    Tracks = new List<Track> {
                             new Track
                             {
                                 Name = selectedTrack.Name,
@@ -132,36 +132,36 @@ else
                                 GenreId = selectedTrack.GenreId, Album = selectedTrack.Album, Genre = selectedTrack.Genre, InvoiceLines = selectedTrack.InvoiceLines, IsFavorite = selectedTrack.IsFavorite,
                                 MediaType = selectedTrack.MediaType, MediaTypeId = selectedTrack.MediaTypeId, Milliseconds = selectedTrack.Milliseconds, UnitPrice = selectedTrack.UnitPrice, Playlists = selectedTrack.Playlists,
                                 PlaylistTracks = selectedTrack.PlaylistTracks } }
-                    };
+                };
                 await PlaylistService.AddAsync(favoritePlaylist);
 
             }
 
-            if (!favoritePlaylist.Tracks.Contains(selectedTrack))
+            else if (!favoritePlaylist.Tracks.Contains(selectedTrack))
             {
                 var existingPlaylist = await PlaylistService.GetPlaylistByName(playlistName);
 
                 var addedPlaylistTracks = new Models.PlaylistTrack { PlaylistId = existingPlaylist.PlaylistId, TrackId = selectedTrack.TrackId };
 
                 var addedTrack = new Track
-                    {
-                        Name = selectedTrack.Name,
-                        AlbumId = selectedTrack.AlbumId,
-                        Bytes = selectedTrack.Bytes,
-                        Composer = selectedTrack.Composer,
-                        GenreId = selectedTrack.GenreId,
-                        Album = selectedTrack.Album,
-                        Genre = selectedTrack.Genre,
-                        InvoiceLines = selectedTrack.InvoiceLines,
-                        IsFavorite = selectedTrack.IsFavorite,
-                        MediaType = selectedTrack.MediaType,
-                        MediaTypeId = selectedTrack.MediaTypeId,
-                        Milliseconds = selectedTrack.Milliseconds,
-                        UnitPrice = selectedTrack.UnitPrice,
-                        PlaylistTracks = selectedTrack.PlaylistTracks,
-                        TrackId = selectedTrack.TrackId
+                {
+                    Name = selectedTrack.Name,
+                    AlbumId = selectedTrack.AlbumId,
+                    Bytes = selectedTrack.Bytes,
+                    Composer = selectedTrack.Composer,
+                    GenreId = selectedTrack.GenreId,
+                    Album = selectedTrack.Album,
+                    Genre = selectedTrack.Genre,
+                    InvoiceLines = selectedTrack.InvoiceLines,
+                    IsFavorite = selectedTrack.IsFavorite,
+                    MediaType = selectedTrack.MediaType,
+                    MediaTypeId = selectedTrack.MediaTypeId,
+                    Milliseconds = selectedTrack.Milliseconds,
+                    UnitPrice = selectedTrack.UnitPrice,
+                    PlaylistTracks = selectedTrack.PlaylistTracks,
+                    TrackId = selectedTrack.TrackId
 
-                    };
+                };
 
                 existingPlaylist.Tracks.Add(selectedTrack);
                 existingPlaylist.PlaylistTracks.Add(addedPlaylistTracks);
@@ -196,24 +196,24 @@ else
             var addedPlaylistTracks = new Models.PlaylistTrack { PlaylistId = existingPlaylist.PlaylistId, TrackId = selectedTrack.TrackId };
 
             var addedTrack = new Track
-                {
-                    Name = selectedTrack.Name,
-                    AlbumId = selectedTrack.AlbumId,
-                    Bytes = selectedTrack.Bytes,
-                    Composer = selectedTrack.Composer,
-                    GenreId = selectedTrack.GenreId,
-                    Album = selectedTrack.Album,
-                    Genre = selectedTrack.Genre,
-                    InvoiceLines = selectedTrack.InvoiceLines,
-                    IsFavorite = false,
-                    MediaType = selectedTrack.MediaType,
-                    MediaTypeId = selectedTrack.MediaTypeId,
-                    Milliseconds = selectedTrack.Milliseconds,
-                    UnitPrice = selectedTrack.UnitPrice,
-                    PlaylistTracks = selectedTrack.PlaylistTracks,
+            {
+                Name = selectedTrack.Name,
+                AlbumId = selectedTrack.AlbumId,
+                Bytes = selectedTrack.Bytes,
+                Composer = selectedTrack.Composer,
+                GenreId = selectedTrack.GenreId,
+                Album = selectedTrack.Album,
+                Genre = selectedTrack.Genre,
+                InvoiceLines = selectedTrack.InvoiceLines,
+                IsFavorite = false,
+                MediaType = selectedTrack.MediaType,
+                MediaTypeId = selectedTrack.MediaTypeId,
+                Milliseconds = selectedTrack.Milliseconds,
+                UnitPrice = selectedTrack.UnitPrice,
+                PlaylistTracks = selectedTrack.PlaylistTracks,
 
 
-                };
+            };
 
             existingPlaylist.Tracks.Add(selectedTrack);
             existingPlaylist.PlaylistTracks.Add(addedPlaylistTracks);
@@ -251,11 +251,11 @@ else
             if (newPlaylist == null)
             {
                 newPlaylist = new Chinook.Models.Playlist
-                    {
-                        Name = NewPlaylistName,
-                        UserPlaylists = new List<UserPlaylist> { new UserPlaylist { UserId = CurrentUserId } },
+                {
+                    Name = NewPlaylistName,
+                    UserPlaylists = new List<UserPlaylist> { new UserPlaylist { UserId = CurrentUserId } },
 
-                        Tracks = new List<Track> {
+                    Tracks = new List<Track> {
                             new Track
                             {
                                Name = addingTrack.Name,
@@ -265,7 +265,7 @@ else
                                GenreId = addingTrack.GenreId, Album = addingTrack.Album, Genre = addingTrack.Genre, InvoiceLines = addingTrack.InvoiceLines, IsFavorite = addingTrack.IsFavorite,
                                MediaType = addingTrack.MediaType, MediaTypeId = addingTrack.MediaTypeId, Milliseconds = addingTrack.Milliseconds, UnitPrice = addingTrack.UnitPrice
                             } }
-                    };
+                };
 
                 await PlaylistService.AddAsync(newPlaylist);
             }
@@ -277,24 +277,24 @@ else
                 var addedPlaylistTracks = new Models.PlaylistTrack { PlaylistId = existingPlaylist.PlaylistId, TrackId = SelectedTrack.TrackId };
 
                 var addedTrack = new Track
-                    {
-                        Name = addingTrack.Name,
-                        AlbumId = addingTrack.AlbumId,
-                        Bytes = addingTrack.Bytes,
-                        Composer = addingTrack.Composer,
-                        GenreId = addingTrack.GenreId,
-                        Album = addingTrack.Album,
-                        Genre = addingTrack.Genre,
-                        InvoiceLines = addingTrack.InvoiceLines,
-                        IsFavorite = addingTrack.IsFavorite,
-                        MediaType = addingTrack.MediaType,
-                        MediaTypeId = addingTrack.MediaTypeId,
-                        Milliseconds = addingTrack.Milliseconds,
-                        UnitPrice = addingTrack.UnitPrice,
-                        PlaylistTracks = addingTrack.PlaylistTracks,
-                        TrackId = addingTrack.TrackId
+                {
+                    Name = addingTrack.Name,
+                    AlbumId = addingTrack.AlbumId,
+                    Bytes = addingTrack.Bytes,
+                    Composer = addingTrack.Composer,
+                    GenreId = addingTrack.GenreId,
+                    Album = addingTrack.Album,
+                    Genre = addingTrack.Genre,
+                    InvoiceLines = addingTrack.InvoiceLines,
+                    IsFavorite = addingTrack.IsFavorite,
+                    MediaType = addingTrack.MediaType,
+                    MediaTypeId = addingTrack.MediaTypeId,
+                    Milliseconds = addingTrack.Milliseconds,
+                    UnitPrice = addingTrack.UnitPrice,
+                    PlaylistTracks = addingTrack.PlaylistTracks,
+                    TrackId = addingTrack.TrackId
 
-                    };
+                };
 
                 existingPlaylist.Tracks.Add(addingTrack);
                 existingPlaylist.PlaylistTracks.Add(addedPlaylistTracks);

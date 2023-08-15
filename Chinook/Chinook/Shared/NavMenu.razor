@@ -71,7 +71,6 @@
 
     public void NavigateToPlaylist(long playlistId)
     {
-        // PlaylistId = UserPlaylists.Where(p => p.Name == "My favorite tracks").Select(x => x.PlaylistId).FirstOrDefault();
         NavigationManager.NavigateTo($"/playlist/{playlistId}");
     }
 }
