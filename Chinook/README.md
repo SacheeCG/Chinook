@@ -14,3 +14,10 @@ When creating a user account, you will see this:
 After you click 'Click here to confirm your account' you should be able to login.
 
 Please put the code in Github. Please put the original code (our code) in the master branch, put your code in a separate branch, and make a pull request to the master branch.
+
+
+# Comments
+
+1.  I have refactored the data retrieval methods into a service class that inherits from a base service class for the code reusability and modularity by centralizing common functionality in the base service class and extending it in the derived service class.
+	2. I have added exception handlings in major functionalities. (need to improve with proper messages and adding logs)
+	3. It would be better if I was able to implement the unit tests for the main functionalities, since there are common methods using by the different components.

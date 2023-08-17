@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chinook.ClientModels;
+using System;
 using System.Collections.Generic;
 
 namespace Chinook.Models
@@ -12,9 +13,10 @@ namespace Chinook.Models
 
         public long PlaylistId { get; set; }
         public string? Name { get; set; }
-
+        public long? TrackId { get; set; }
         public virtual ICollection<Track> Tracks { get; set; }
         public virtual ICollection<UserPlaylist> UserPlaylists { get; set; }
+        public virtual ICollection<PlaylistTrack> PlaylistTracks { get; set; }
 
     }
 }

@@ -20,12 +20,13 @@ namespace Chinook.Models
         public long Milliseconds { get; set; }
         public long? Bytes { get; set; }
         public byte[] UnitPrice { get; set; } = null!;
-
+        public long? PlaylistId { get; set; }
         public virtual Album? Album { get; set; }
         public virtual Genre? Genre { get; set; }
         public virtual MediaType MediaType { get; set; } = null!;
         public virtual ICollection<InvoiceLine> InvoiceLines { get; set; }
 
         public virtual ICollection<Playlist> Playlists { get; set; }
+        public virtual ICollection<PlaylistTrack> PlaylistTracks { get; set; }
     }
 }
