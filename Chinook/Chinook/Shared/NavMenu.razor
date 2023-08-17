@@ -1,9 +1,10 @@
 ﻿@using Chinook.Models;
 @using Chinook.Services;
-@inject UserService UserService
-@inject PlaylistService PlaylistService
+
+@inject IUserService UserService
+@inject IPlaylistService PlaylistService
 @inject NavigationManager NavigationManager
-@inject NavMenuService NavMenuService
+@inject INavMenuService NavMenuService
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -21,7 +22,7 @@
                 <span class="oi oi-home" aria-hidden="true"></span>Home
             </NavLink>
         </div>
-        @foreach (var playlist in UserPlaylists.Where(x => x.UserPlaylists.Count > 0))
+        @foreach (var playlist in userPlaylists.Where(x => x.UserPlaylists.Count > 0))
         {
             <div class="nav-item px-3">
 
@@ -36,21 +37,24 @@
 
 @code {
     private bool collapseNavMenu = true;
+
     private string lastRenderTime;
+
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-    [Parameter]
-    public long PlaylistId { get; set; }
+
     [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationState { get; set; }
-    private string CurrentUserId;
-    private List<Playlist> UserPlaylists;
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private string currentUserId;
+
+    private List<Playlist> userPlaylists;
   
     protected override async Task OnInitializedAsync()
     {
         await InvokeAsync(StateHasChanged);
-        CurrentUserId = await UserService.GetUserId(AuthenticationState);
+        currentUserId = await UserService.GetUserId(authenticationState);
       
-        UserPlaylists = await PlaylistService.GetUserPlaylists(CurrentUserId);
+        userPlaylists = await PlaylistService.GetUserPlaylists(currentUserId);
         NavMenuService.OnReloadTestComponentRequested += Reload;
 
     }
@@ -59,9 +63,9 @@
     {
         lastRenderTime = DateTime.Now.ToString("HH:mm:ss");
         StateHasChanged();
-        CurrentUserId =  UserService.GetUserId(AuthenticationState).Result;
+        currentUserId = UserService.GetUserId(authenticationState).Result;
 
-        UserPlaylists =  PlaylistService.GetUserPlaylists(CurrentUserId).Result;
+        userPlaylists = PlaylistService.GetUserPlaylists(currentUserId).Result;
     }
 
     private void ToggleNavMenu()

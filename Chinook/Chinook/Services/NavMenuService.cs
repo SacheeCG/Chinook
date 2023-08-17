@@ -1,6 +1,6 @@
 ﻿namespace Chinook.Services
 {
-    public class NavMenuService
+    public class NavMenuService: INavMenuService
     {
         public event Action OnReloadTestComponentRequested;
         public NavMenuService() { }

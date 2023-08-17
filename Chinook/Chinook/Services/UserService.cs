@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace Chinook.Services
 {
-    public class UserService : BaseDataService<ChinookUser>
+    public class UserService : BaseService<ChinookUser>, IUserService
     {
         private readonly ChinookContext _context;
         

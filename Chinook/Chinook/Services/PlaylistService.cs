@@ -1,12 +1,11 @@
-﻿using Chinook.ClientModels;
+﻿//using Chinook.ClientModels;
 using Chinook.Models;
 using Microsoft.EntityFrameworkCore;
-using NuGet.DependencyResolver;
-using Playlist = Chinook.Models.Playlist;
+using NuGet.Packaging;
 
 namespace Chinook.Services
 {
-    public class PlaylistService : BaseDataService<Chinook.Models.Playlist>
+    public class PlaylistService : BaseService<Playlist>, IPlaylistService
     {
         private readonly ChinookContext _context;
         public PlaylistService(ChinookContext context) : base(context)
@@ -14,49 +13,36 @@ namespace Chinook.Services
             _context = context;
         }
 
-        public async Task<Chinook.Models.Playlist> FindPlaylistId(long id)
+        public async Task<Playlist> FindPlaylistId(long id)
         {
             return await _context.Playlists.FindAsync(id);
         }
 
-        public async Task<Chinook.Models.Playlist> GetPlaylistByName(string playlistName)
+        public async Task<Playlist> GetPlaylistByName(string playlistName, string userId)
         {
-            return await _context.Playlists.AsNoTracking().Include(x=>x.Tracks).Include(x=>x.UserPlaylists).Include(x => x.PlaylistTracks).Where(a => a.Name == playlistName && a.PlaylistId > 0).FirstOrDefaultAsync();
+            return await _context.Playlists.AsNoTracking().Include(x=>x.Tracks).Include(x=>x.UserPlaylists).Include(x => x.PlaylistTracks).Where(a => a.Name == playlistName && a.PlaylistId > 0 && a.UserPlaylists.Where(x => x.UserId == userId).Any()).FirstOrDefaultAsync();
         }
 
-        public async Task<Chinook.Models.Playlist> GetFavoritePlaylistByUser(long playlistId, string currentUserId)
+        public async Task<Playlist> GetFavoritePlaylistByUser(long playlistId, string currentUserId)
         {
-            var favoriteList = await _context.Playlists.AsNoTracking().Include(p => p.UserPlaylists.Where(x=> x.UserId == currentUserId)).Include(x=>x.Tracks).Include(x=>x.PlaylistTracks).Where(li => li.PlaylistId == playlistId).FirstOrDefaultAsync();
-            
-            return favoriteList;
-
+            List<long> trackIdsInPlaylist = _context.PlaylistTracks.Where(x=>x.PlaylistId == playlistId).Select(pt => pt.TrackId).ToList();
+            var tracks = await _context.Tracks.Where(t => trackIdsInPlaylist.Contains(t.TrackId)).ToListAsync();
+            var favoritePlaylist = await _context.Playlists.AsNoTracking().Include(p => p.UserPlaylists.Where(x=> x.UserId == currentUserId)).Include(x=>x.Tracks).Include(x=>x.PlaylistTracks).Where(x => x.PlaylistId == playlistId).FirstOrDefaultAsync();
+            favoritePlaylist.Tracks.AddRange(tracks);
+            return favoritePlaylist;
         }
 
-        public async Task<List<Chinook.Models.Playlist>> GetUserPlaylists(string currentUserId)
+        public async Task<List<Playlist>> GetUserPlaylists(string currentUserId)
         {
             return await _context.Playlists.AsNoTracking().Include(p => p.UserPlaylists.Where(x => x.UserId == currentUserId)).Where(x=>x.UserPlaylists != null && x.PlaylistId > 0).ToListAsync();
         }
 
-        public async Task<List<Album>> GetAlbums()
+        public async Task UpdatePlaylistAsync(Playlist playlist)
         {
-            return await _context.Albums.AsNoTracking().Include(p => p.Artist).ToListAsync();
-        }
-
-        public async Task<Album> GetAlbumByName(string albumName)
-        {
-            return await _context.Albums.AsNoTracking().Include(p => p.Artist).Where(a => a.Title == albumName).FirstOrDefaultAsync();
-        }
-
-        public async Task CreateOrUpdateUserPlaylistAsync(UserPlaylist playlist, long playlistId)
-        {
-            var existingPlaylist = await _context.UserPlaylists.AsNoTracking().Where(x => x.PlaylistId == playlistId && x.UserId == playlist.UserId).FirstOrDefaultAsync();
-
-            if (existingPlaylist == null)
-            {
-                _context.UserPlaylists.Add(playlist);
-                _context.Entry(playlist).State = EntityState.Added;
-                await _context.SaveChangesAsync();
-            }
+            _context.Playlists.Attach(playlist);
+            _context.Entry(playlist).State = EntityState.Detached;
+         
+            await _context.SaveChangesAsync();
         }
     }
 }

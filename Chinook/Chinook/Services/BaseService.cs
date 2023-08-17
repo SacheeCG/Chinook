@@ -2,11 +2,11 @@
 
 namespace Chinook.Services
 {
-    public class BaseDataService<T> where T : class
+    public class BaseService<T> : IBaseService<T> where T : class
     {
         private readonly ChinookContext _context;
 
-        public BaseDataService(ChinookContext context)
+        public BaseService(ChinookContext context)
         {
             _context = context;
         }
@@ -29,7 +29,7 @@ namespace Chinook.Services
         }
 
         public async Task UpdateAsync(T entity)
-        {
+        {           
             _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
